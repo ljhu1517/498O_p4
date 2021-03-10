@@ -1,1 +1,92 @@
-<h1>Project 4 Demo Website<h1>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>A4: Interactions </title>
+    <link rel="stylesheet" type="text/css" href="./a4.css">
+    <script src="./d3.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+  </head>
+
+  <body>
+    <h2>Drug Poisoning Mortality in the U.S.</h2>  
+    
+    <div id="viewby">
+      <p id="viewlabel">Viewing Options:</p>
+      
+      <form id="dimensions">
+          <input type='radio' id="wholecountry" name="mode" checked>All states</input><br>
+          <input type='radio' id="states" name="mode">Individual states</input>
+        </form>
+      
+        <br>
+      <br>
+
+      <p id="viewlabel">Sorting Options:</p>
+      <form id="sortmenu">
+        <input type='radio' id="alphabet" name="mode" checked>Alphabetically</input><br>
+        <input type='radio' id="magnitude" name="mode">By rate magnitude</input>
+      </form>
+
+      <br> <br>
+      
+      <p id="viewlabel">State Selection:</p>
+    </div>
+
+    <svg id="vis"></svg>
+
+    <!-- <svg id="sidebar"></svg> -->
+    <!-- <svg id="vis" width="1500" height="900"></svg> -->
+    
+    <!-- <svg id="options" width="250" height="700"></svg> -->
+    <div class="row align-items-center">
+      <div class="col-sm-2"><p id="value-time"></p></div>
+      <div class="col-sm"><div id="slider-time"></div></div>
+    </div>
+
+    <div>
+      <h3>About this visualization</h3>
+      <p>This visualization tool allows exploration of age-adjusted death rates for drug poisoning in the United States, 
+        using data from the National Vital Statistics System, including deaths classified as homicides, suicides, 
+        unintentional, or for undetermined intent.
+        The original dataset can be found 
+      <a href="https://catalog.data.gov/dataset/nchs-drug-poisoning-mortality-by-county-united-states-24142">here</a>.
+        The urban/rural categorization system for individual counties is the scheme designed by the National Center for Health Statistics, 
+        with "noncore" counties being the least urban, and "large central metro" being the most urban. More information 
+        on this system can be found <a href="https://www.cdc.gov/nchs/data_access/urban_rural.htm">here</a>.
+      </p>
+      
+      <h3>Writeup</h3>
+      <h5>Design Rationale</h5>
+      <p id="bodytext">
+        The attribute of focus in this dataset is the drug poisoning death rate. I set out to make a visualization that would help users understand the change of death rates over time and to compare states to each other and counties within states to each other. As such, I chose to encode the information using a bar chart. The obvious alternative available was to use a heat map, since this is state and county information. With a heat map, a user can see geographical relationships and patterns (if any), such as trends in the southern part of the country versus the east and west coasts. One tradeoff with a heat map, however, is that the viewer cannot as precisely quantify the numerical differences in different states, because you lack a numerical axis for each state. Because I wanted to prioritize more accurate and precise understanding of the specific rates, I chose to display the information in a bar chart instead. 
+      </p>
+      <p id="bodytext">Another one of the attributes that this dataset has is an urban/rural categorization, which has to do most closely with the density of the population in a certain area. I considered using patterns to show the urban/rural categorization, but decided on a color scale, with the warmer colors representing more densely populated areas. This is appropriate because there is an order to these categories, from “most urban” to “least urban.” 
+      </p>
+    <p id="bodytext">The first interaction technique I chose was a time filter. It’s a slider that covers the entire time range of the dataset. I chose a slider because it most quickly allows the user to see the range of the time they can view, and because the range is only 2003–2017, it’s short enough that getting from one end to the other through each discrete year in between does not take long. I considered a dropdown menu to select the year, but that would not as closely imitate what the users are navigating, which is a timeline.  The sliding action also requires fewer clicks than a dropdown menu, and vitally, you can drag it across multiple years and the graph will respond, which a dropdown menu would not be able to replicate. The dragging allows a user to view the change over multiple years. 
+    </p>
+
+    <p id="bodytext">The second interaction technique I chose was a radio button menu that allows viewers to view the entire country, with each bar representing a state, or an individual state. If the latter, a dropdown menu appears that allows them to select a state. One alternative I considered to this was to allow typing to search for a state, but decided against this because fifty states plus D.C. is a closed set and a short enough list that having a dropdown would be more navigable. It also guards against typos. The radio button system allows for users to toggle between viewing the states and counties. 
+    </p>
+    <p id="bodytext">The third interaction technique in this visualization is another radio button menu, this time allowing the user to sort the bars based on descending death rate, or in alphabetical order of the area name. I chose this interaction technique because it gives the user flexibility in how to view the relationship between states and counties and can help reveal patterns in the extremes. For instance, West Virginia consistently places near the highest death rate. I considered an alternative of using a checkbox for this, with a checked state indicating that the user wanted to sort by the rate instead of alphabetically. While the checkbox requires the same number of clicks and less reading at a glance, it didn’t make it the most clear what the two options for sorting were. Check boxes suggest “on” or “off” which is not as reflective of the options as a radio button system would be. 
+    </p>
+<p id="bodytext">Lastly, there are also tooltips that show up if you hover over the bars, which show the state or county name, the death rate rounded to the nearest hundredth, and for counties, the population for that year. 
+</p>
+<p id="bodytext">Another nuance that I considered two options for was the y axis scale and whether to make it dynamic to respond to the year. For instance, if in 2005 the country’s highest death rate was 35, then that would be the maximum of the scale for that year, but would change for other years. Similarly, for viewing individual states, the extrema for each year would change. An alternative to this approach and the one that I ultimately chose is to have a preset maximum for each state and for the country. For instance, if the maximum death rate from any county in Maryland from all of the years in the dataset’s range was 33.2, then when viewing Maryland data, the y axis scale maximum would always be 35. I chose this because, again, one of the primary goals of this visualization is to understand change over time. If the axis changes with every year, then it would be harder to understand how the death rates have changed over time, compared to if the axis stays the same for any given state. If the axis stays the same, the user gets an understanding of the range of the data over time. 
+</p>
+
+      <h5>Development Process</h5>
+      <p id="bodytext">
+        My development process started out with looking for datasets that were detailed enough and big enough to support interesting interactions and that would generate useful insights. 
+        After I found my dataset, I set about understanding the group of attributes and thinking about which ones to include in the visualization. For instance, one attribute I decided against trying to encode was Census Division, because that would not have been useful. I then considered what questions I would want a user to be able to answer using this visualization. After I had determined what I would want a user to learn (mentioned in the first paragraph of the writeup), I started thinking about how the user would interact with it based on the available attributes. Once I had a rough idea of wanting there to be a time option, and an option for narrowing down to individual states, sketching out the layout and determining how I wanted the visualization to be laid out: how many panels would there be and where would the option widgets be. Once I found a rough layout (that would change as I fleshed out the design), I started thinking more in depth about the widgets themselves and what mechanisms I would use, including things like dropdown menus, radio buttons, check boxes, or search boxes. I tried out a couple and then coded the ones I found the most appropriate. When I started coding, I realized some of the original dataset was not actually organized as I had expected, so I had to go back and clean the data. I continued to add other features like tooltips, legends, and colors, and also worked out conditional rendering (for instance, the dropdown menu and legend only appears if the proper radio button for states is selected). There were also two Javascript objects that held information about the states that would make it faster for indexing that I generated. 
+
+      </p>
+
+      <p id="bodytext">
+        I would estimate very roughly that this application took me about 21 hours of work to complete from start to finish. The aspects that took the most time were the interaction features and learning how to write multiple onChange functions that would also interact with each other. This required learning not only about d3 syntax and features, but also thinking about the architecture of the program. What also took a lot of time was formatting everything to fit because the bar chart is dynamic. I struggled with figuring out how to organize the different functions so that every time there was an update on a widget, the entire graph would render appropriately. 
+
+      </p>
+    </div>
+    <script src="./a4.js"></script>
+  </body>
+</html>
+
